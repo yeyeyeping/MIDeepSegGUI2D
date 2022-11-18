@@ -1,11 +1,9 @@
 import enum
-import sys
 
-from PySide6.QtGui import QImage
-from typing import Optional
-import PySide6.QtCore
+from PySide6.QtGui import QImage, QPainter
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Slot
+from Model.Scribble import RectList, PointList, ScribeFactory, SCRIBBLE_TYPE
 
 
 class SEED_TYPE(enum.Flag):
@@ -25,13 +23,38 @@ class ImageLabelModel(QObject):
     __imgW: int
     __imgH: int
     showImag: QImage
-    seed_type: int
+    seed_type: SEED_TYPE
+
+    cur_scribble_type: SCRIBBLE_TYPE
+    scribbles: list
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.__foreground_seed = []
         self.__backgound_seed = []
         self.seed_type = SEED_TYPE.No
+        self.scribbles = []
+
+        self.scribbles.append(RectList(self))
+        self.scribbles.append(PointList(self))
+
+        self.cur_scribble_type = SCRIBBLE_TYPE.RECT
+
+    def start(self, x, y, color):
+        xr, yr = self.mapToRelative(x, y)
+        ScribeFactory.getScribbleByEnum(self.cur_scribble_type, self).start(xr, yr, color)
+        ScribeFactory.getScribbleByEnum(self.cur_scribble_type, self).update(xr, yr)
+
+    def update(self, x, y):
+        xr, yr = self.mapToRelative(x, y)
+        ScribeFactory.getScribbleByEnum(self.cur_scribble_type, self).update(xr, yr)
+
+    def draw(self, painter: QPainter):
+        ScribeFactory.getScribbleByEnum(self.cur_scribble_type, self).draw(painter)
+
+    def end(self, x, y):
+        xr, yr = self.mapToRelative(x, y)
+        ScribeFactory.getScribbleByEnum(self.cur_scribble_type, self).end(xr, yr)
 
     @property
     def backgroundSeed(self):
@@ -40,9 +63,6 @@ class ImageLabelModel(QObject):
     @property
     def foregoundSeed(self):
         return self.__foreground_seed
-
-    def initialize(self, parent):
-        self.__m_parent = parent
 
     def setImage(self, img: QImage):
         self.clear()
@@ -102,25 +122,3 @@ class ImageLabelModel(QObject):
         :return:
         '''
         return x + self.__originX, y + self.__originY
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QApplication
-    from UI.Component.LabelImage import LabelImage
-    from Model.GlobalViewModel import GlobalViewModel
-    from PySide6.QtGui import *
-
-
-    class TestLabelImage(QMainWindow):
-
-        def __init__(self, parent=None) -> None:
-            super().__init__(parent)
-            m = GlobalViewModel()
-            self.center = QWidget(self)
-            self.img = LabelImage(self.center)
-            self.img.initialize(m)
-            self.img.setPixmap("/data/home/yeep/Desktop/graduate/qt/app/MIDeepSeg/logo.png")
-            self.setCentralWidget(self.center)
-            self.show()
-
-    app = QApplication()
-    main = TestLabelImage()
-    sys.exit(app.exec())
