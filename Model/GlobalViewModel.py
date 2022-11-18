@@ -15,9 +15,9 @@ class GlobalViewModel(QObject):
         super().__init__(parent)
         self.__img_vm = ImageLabelModel(self)
         self.lastOpenDir = os.path.abspath(".")
-        self.supportType = "Images" + str(
-            tuple([f"*.{(bytes.decode(bytes(i)))}"
-                   for i in QImageReader.supportedImageFormats()]))
+        self.supportType = "Image Files(" + \
+                           " ".join([f"*.{(bytes.decode(bytes(i)))}"
+                                     for i in QImageReader.supportedImageFormats()]) + ")"
 
     @property
     def img_vm(self):
@@ -26,3 +26,8 @@ class GlobalViewModel(QObject):
     @img_vm.setter
     def img_vm(self, m):
         self.__img_vm = m
+
+
+if __name__ == '__main__':
+    print("Image Files(" + " ".join([f"*.{(bytes.decode(bytes(i)))}"
+                                     for i in QImageReader.supportedImageFormats()]) + ")")

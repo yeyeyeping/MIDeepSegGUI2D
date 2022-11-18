@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog, QStyleFactory
 
 from Model.GlobalViewModel import GlobalViewModel
 
@@ -8,10 +8,12 @@ class ImageDelegate:
         self.gvm = gvm
 
     def selectFile(self, win):
-        f = QFileDialog.getOpenFileName(win, "Open File",
-                                        self.gvm.lastOpenDir,
-                                        self.gvm.supportType
-                                        )
+        fdiag = QFileDialog()
+        f = fdiag.getOpenFileName(win, "Open File",
+                                  self.gvm.lastOpenDir,
+                                  self.gvm.supportType
+                                  )
+        fdiag.setStyleSheet("")
         return f[0]
 
     def saveSeg(self, filename):

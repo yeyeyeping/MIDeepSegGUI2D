@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from PySide6.QtGui import QPainter, QPen
-from PySide6.QtCore import Qt, QRect
+from PySide6.QtCore import Qt, QRect, QPoint
 from typing import List
 import enum
 
@@ -67,24 +67,46 @@ class ScribeBase(ABC):
 
 
 class PointList(ScribeBase):
+    __positive: [QPoint]
+    __negative: [QPoint]
+    color: int
+
     def __init__(self, label_model):
         super().__init__()
         self.__label_model = label_model
+        self.__negative = []
+        self.__positive = []
 
     def start(self, x, y, color):
-        pass
+        self.color = color
+        if color == Qt.red:
+            self.__positive.append(QPoint(x, y))
+        elif color == Qt.blue:
+            self.__negative.append(QPoint(x, y))
 
     def update(self, x, y):
-        pass
+        if self.color == Qt.red:
+            self.__positive.append(QPoint(x, y))
+        elif self.color == Qt.blue:
+            self.__negative.append(QPoint(x, y))
 
     def draw(self, painter: QPainter):
-        pass
+        painter.setPen(QPen(Qt.blue, 6))
+        for p in self.__negative:
+            xr, yr = self.__label_model.recoverToAbs(p.x(), p.y())
+            painter.drawPoint(QPoint(xr, yr))
+
+        painter.setPen(QPen(Qt.red, 6))
+        for p in self.__positive:
+            xr, yr = self.__label_model.recoverToAbs(p.x(), p.y())
+            painter.drawPoint(QPoint(xr, yr))
 
     def end(self, x, y):
-        pass
+        self.update(x, y)
 
     def clear(self):
-        pass
+        self.__negative.clear()
+        self.__positive.clear()
 
 
 class RectList(ScribeBase):
@@ -145,7 +167,7 @@ class ScribeFactory:
     def getPointList(model_view) -> PointList:
 
         if not hasattr(ScribeFactory, "pointList"):
-            ScribeFactory.pointList = RectList(model_view)
+            ScribeFactory.pointList = PointList(model_view)
         return ScribeFactory.pointList
 
     @staticmethod
@@ -154,6 +176,13 @@ class ScribeFactory:
             return ScribeFactory.getRectList(model_view)
         elif t == SCRIBBLE_TYPE.SEED:
             return ScribeFactory.getPointList(model_view)
+
+    @staticmethod
+    def release():
+        if hasattr(ScribeFactory, "rectList"):
+            ScribeFactory.rectList.clear()
+        if hasattr(ScribeFactory, "pointList"):
+            ScribeFactory.pointList.clear()
 
 
 if __name__ == '__main__':

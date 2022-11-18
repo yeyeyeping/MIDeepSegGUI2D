@@ -1,3 +1,5 @@
+from PySide6 import QtGui
+
 from Model.GlobalViewModel import GlobalViewModel
 from Logic.Common.ImageDelegate import ImageDelegate
 from PySide6.QtGui import QAction, QIcon, QPixmap, QImage, QPalette, QImageReader
@@ -11,9 +13,6 @@ class ApplicationWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        '''
-        self.graph_maker = Controler()
-        '''
         self.initUI()
 
     def initUI(self):
@@ -31,7 +30,7 @@ class ApplicationWindow(QMainWindow):
         fileMenu.addAction(self.openAction)
 
         # 保存菜单项
-        self.saveAction = QAction(get_resource_path("Res/Image/save.bmp"), 'Save Image', self)
+        self.saveAction = QAction(QIcon(get_resource_path("Res/Image/save.bmp")), 'Save Image', self)
         self.saveAction.setShortcut('Ctrl+S')
         self.saveAction.setStatusTip('Save file to disk.')
         self.saveAction.triggered.connect(self.on_save)
@@ -54,7 +53,7 @@ class ApplicationWindow(QMainWindow):
         # 布局左边的图片框
         self.img = LabelImage(self)
         self.img.initialize(self.globalModel)
-        self.img.setStyleSheet("border:3px solid #242424;")
+        self.img.setStyleSheet(QStyleFactory.create("border:3px solid #242424;"))
         self.img.setPixmap(get_resource_path("Res/Image/logo.png"))
         hLayout.addWidget(self.img)
 
@@ -93,7 +92,7 @@ class ApplicationWindow(QMainWindow):
         self.segmentButton = QPushButton("Segment")
         self.segmentButton.setStyleSheet("background-color:white")
         self.segmentButton.clicked.connect(self.on_segment)
-        self.vLayout.addWidget(self.segmentButton)
+        vLayout.addWidget(self.segmentButton)
 
         self.refinementButton = QPushButton("Refinement")
         self.refinementButton.setStyleSheet("background-color:white")
@@ -110,7 +109,7 @@ class ApplicationWindow(QMainWindow):
 
         self.cleanButton = QPushButton("Clear all seeds")
         self.cleanButton.setStyleSheet("background-color:white")
-        self.cleanButton.clicked.connect(self.on_clean)
+        self.cleanButton.clicked.connect(self.globalModel.img_vm.clear)
         vLayout.addWidget(self.cleanButton)
 
         self.nextButton = QPushButton("Save segmentation")
@@ -119,50 +118,54 @@ class ApplicationWindow(QMainWindow):
         vLayout.addWidget(self.nextButton)
 
         self.setCentralWidget(self.centerWidget)
+        self.center()
         self.show()
-
-    @staticmethod
-    def get_qimage(cvimage):
-        height, width, bytes_per_pix = cvimage.shape
-        bytes_per_line = width * bytes_per_pix
-        cv2.cvtColor(cvimage, cv2.COLOR_BGR2RGB, cvimage)
-        return QImage(cvimage.data, width, height, bytes_per_line, QImage.Format_RGB888)
 
     @Slot()
     def on_open(self):
         delegate = ImageDelegate(self.globalModel)
-        fpath = delegate.selectFile(win=self)
-        self.seedLabel.setPixmap(fpath)
+        fpath = delegate.selectFile(win=self.parent())
+        if fpath == "":
+            return
+        self.img.setPixmap(fpath)
 
     @Slot()
     def on_save(self):
-        f = QFileDialog.getSaveFileName()
-        print('Saving')
-        if f is not None and f != "":
-            f = f[0]
-            self.graph_maker.save_image(f)
-            self.graph_maker.save_image(f)
-        else:
-            pass
-
+        pass
+        # f = QFileDialog.getSaveFileName()
+        # print('Saving')
+        # if f is not None and f != "":
+        #     f = f[0]
+        #     self.graph_maker.save_image(f)
+        #     self.graph_maker.save_image(f)
+        # else:
+        #     pass
 
     @Slot()
     def on_segment(self):
-        self.graph_maker.extreme_segmentation()
-        self.seedLabel.setPixmap(QPixmap.fromImage(
-            self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.extreme_segmentation))))
+        pass
+        # self.graph_maker.extreme_segmentation()
+        # self.seedLabel.setPixmap(QPixmap.fromImage(
+        #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.extreme_segmentation))))
 
     @Slot()
-    def on_clean(self):
-        self.graph_maker.clear_seeds()
-        self.seedLabel.setPixmap(QPixmap.fromImage(
-            self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.clear_seeds))))
+    # def on_clean(self):
+    # self.graph_maker.clear_seeds()
+    # self.seedLabel.setPixmap(QPixmap.fromImage(
+    #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.clear_seeds))))
 
     @Slot()
     def on_refinement(self):
-        self.graph_maker.refined_seg()
-        self.seedLabel.setPixmap(QPixmap.fromImage(
-            self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.refined_seg))))
+        pass
+        # self.graph_maker.refined_seg()
+        # self.seedLabel.setPixmap(QPixmap.fromImage(
+        #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.refined_seg))))
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 
 if __name__ == '__main__':
