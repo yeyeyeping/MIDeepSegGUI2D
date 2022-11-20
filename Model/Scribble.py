@@ -13,18 +13,21 @@ class SCRIBBLE_TYPE(enum.Flag):
 class Point:
     x: int
     y: int
-    color: None
 
-    def __init__(self, x, y, color=Qt.red):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.color = color
 
     def __repr__(self):
         return f"x:{self.x}, y:{self.y}"
 
 
 class Rect:
+    '''
+    用于存储绘制时的矩形框数据
+    包含左上角、右下角相对与图片左上角坐标
+    以及绘制时的颜色、像素宽度
+    '''
     start: Point
     end: Point
     color: None
@@ -67,8 +70,11 @@ class ScribeBase(ABC):
 
 
 class PointList(ScribeBase):
-    __positive: [QPoint]
-    __negative: [QPoint]
+    '''
+    用“毛笔”（点）工具绘制时，鼠标按下后将会把鼠标经过的位置全部存储到__positive，__negative中
+    '''
+    __positive: list
+    __negative: list
     color: int
 
     def __init__(self, label_model):
@@ -77,28 +83,36 @@ class PointList(ScribeBase):
         self.__negative = []
         self.__positive = []
 
+    @property
+    def negative(self):
+        return self.__negative
+
+    @property
+    def positive(self):
+        return self.__positive
+
     def start(self, x, y, color):
         self.color = color
         if color == Qt.red:
-            self.__positive.append(QPoint(x, y))
+            self.__positive.append((x, y))
         elif color == Qt.blue:
-            self.__negative.append(QPoint(x, y))
+            self.__negative.append((x, y))
 
     def update(self, x, y):
         if self.color == Qt.red:
-            self.__positive.append(QPoint(x, y))
+            self.__positive.append((x, y))
         elif self.color == Qt.blue:
-            self.__negative.append(QPoint(x, y))
+            self.__negative.append((x, y))
 
-    def draw(self, painter: QPainter):
-        painter.setPen(QPen(Qt.blue, 6))
+    def draw(self, painter: QPainter, width=4):
+        painter.setPen(QPen(Qt.blue, width))
         for p in self.__negative:
-            xr, yr = self.__label_model.recoverToAbs(p.x(), p.y())
+            xr, yr = self.__label_model.recoverToAbs(p[0], p[1])
             painter.drawPoint(QPoint(xr, yr))
 
-        painter.setPen(QPen(Qt.red, 6))
+        painter.setPen(QPen(Qt.red, width))
         for p in self.__positive:
-            xr, yr = self.__label_model.recoverToAbs(p.x(), p.y())
+            xr, yr = self.__label_model.recoverToAbs(p[0], p[1])
             painter.drawPoint(QPoint(xr, yr))
 
     def end(self, x, y):
@@ -120,7 +134,7 @@ class RectList(ScribeBase):
         self.curRect = None
         self.__label_model = label_model
 
-    def start(self, x, y, color=Qt.red, width=6):
+    def start(self, x, y, color=Qt.red, width=4):
         self.curRect = Rect(x, y, width, color)
 
     def update(self, x, y):
@@ -132,10 +146,13 @@ class RectList(ScribeBase):
     def draw(self, painter: QPainter):
         if self.curRect is None:
             return
+        # 鼠标按下时，将起点记录到self.curRect,鼠标拖动时将不断的更新curRect的终点
+        # 绘制时，将坐标恢复到相对于窗口的左上角
         sxr, syr = self.__label_model.recoverToAbs(self.curRect.start.x, self.curRect.start.y)
         exr, eyr = self.__label_model.recoverToAbs(self.curRect.end.x, self.curRect.end.y)
 
         painter.setPen(QPen(self.curRect.color, self.curRect.width))
+        # 利用QRect：左上角坐标x,y,长，宽绘制
         painter.drawRect(QRect(sxr, syr, exr - sxr, eyr - syr))
 
         for rect in self.__rects:
@@ -165,7 +182,6 @@ class ScribeFactory:
 
     @staticmethod
     def getPointList(model_view) -> PointList:
-
         if not hasattr(ScribeFactory, "pointList"):
             ScribeFactory.pointList = PointList(model_view)
         return ScribeFactory.pointList

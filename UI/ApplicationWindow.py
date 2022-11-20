@@ -2,22 +2,26 @@ from PySide6 import QtGui
 
 from Model.GlobalViewModel import GlobalViewModel
 from Logic.Common.ImageDelegate import ImageDelegate
-from PySide6.QtGui import QAction, QIcon, QPixmap, QImage, QPalette, QImageReader
+from PySide6.QtGui import QAction, QIcon, QPalette
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from UI.Component.LabelImage import LabelImage
 from Logic.utils.Pathdb import get_resource_path
+from Logic.Common.MainApplication import MainApplication
 
 
 class ApplicationWindow(QMainWindow):
+    __mainApplication: MainApplication
 
     def __init__(self):
         super().__init__()
+        self.globalModel = GlobalViewModel()
+        self.__mainApplication = MainApplication(self.globalModel)
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle('Annotation')
-        self.setMaximumSize(600, 450)
+        # self.setMaximumSize(600, 450)
 
         '''设置菜单栏'''
         mainMenu = self.menuBar()
@@ -48,13 +52,12 @@ class ApplicationWindow(QMainWindow):
         self.centerWidget = QWidget(self)
         hLayout = QHBoxLayout()
         self.centerWidget.setLayout(hLayout)
-        self.globalModel = GlobalViewModel()
 
         # 布局左边的图片框
         self.img = LabelImage(self)
         self.img.initialize(self.globalModel)
-        self.img.setStyleSheet(QStyleFactory.create("border:3px solid #242424;"))
-        self.img.setPixmap(get_resource_path("Res/Image/logo.png"))
+        self.img.setStyleSheet("border:3px solid #242424;")
+        self.img.setPixmap(get_resource_path("Res/Image/3.png"))
         hLayout.addWidget(self.img)
 
         # 右边的标签和按钮，放在一个QWidget里面
@@ -91,12 +94,12 @@ class ApplicationWindow(QMainWindow):
 
         self.segmentButton = QPushButton("Segment")
         self.segmentButton.setStyleSheet("background-color:white")
-        self.segmentButton.clicked.connect(self.on_segment)
+        self.segmentButton.clicked.connect( self.__mainApplication.extremSegmentation)
         vLayout.addWidget(self.segmentButton)
 
         self.refinementButton = QPushButton("Refinement")
         self.refinementButton.setStyleSheet("background-color:white")
-        self.refinementButton.clicked.connect(self.on_refinement)
+        self.refinementButton.clicked.connect(self.__mainApplication.refine)
         vLayout.addWidget(self.refinementButton)
 
         self.saveLine = QLabel(self)
@@ -109,7 +112,7 @@ class ApplicationWindow(QMainWindow):
 
         self.cleanButton = QPushButton("Clear all seeds")
         self.cleanButton.setStyleSheet("background-color:white")
-        self.cleanButton.clicked.connect(self.globalModel.img_vm.clear)
+        self.cleanButton.clicked.connect(self.globalModel.imgModel.clear)
         vLayout.addWidget(self.cleanButton)
 
         self.nextButton = QPushButton("Save segmentation")
@@ -141,22 +144,24 @@ class ApplicationWindow(QMainWindow):
         # else:
         #     pass
 
-    @Slot()
-    def on_segment(self):
-        pass
+    # @Slot()
+    # def on_segment(self):
+    #
+    #
+    #     pass
         # self.graph_maker.extreme_segmentation()
         # self.seedLabel.setPixmap(QPixmap.fromImage(
         #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.extreme_segmentation))))
 
-    @Slot()
+    # @Slot()
     # def on_clean(self):
     # self.graph_maker.clear_seeds()
     # self.seedLabel.setPixmap(QPixmap.fromImage(
     #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.clear_seeds))))
 
-    @Slot()
-    def on_refinement(self):
-        pass
+    # @Slot()
+    # def on_refinement(self):
+    #     pass
         # self.graph_maker.refined_seg()
         # self.seedLabel.setPixmap(QPixmap.fromImage(
         #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.refined_seg))))
