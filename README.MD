@@ -19,7 +19,7 @@ Before you can use this package for image segmentation. You should:
 * Python 3.8 on Linux, Python 3.75 on Windows. 
 * PyTorch version >=1.0.1
 * Pyside6
-*  Numpy, scikit-image,scipy, SimpleITK,OpenCV, pyqt5, scipy......
+*  Numpy, scikit-image,scipy, OpenCV......
 * Install the [GeodisTK][geos_dis_link] for geodesic distance transformation.
 * Install the [SimpleCRF][simplecrf_link] for interactive refinement.
 ## How to use
