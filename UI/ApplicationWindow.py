@@ -1,10 +1,10 @@
 from PySide6 import QtGui
-
-from Model.GlobalViewModel import GlobalViewModel
-from Logic.Common.ImageDelegate import ImageDelegate
 from PySide6.QtGui import QAction, QIcon, QPalette
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
+
+from Model.GlobalViewModel import GlobalViewModel
+from Logic.Common.ImageDelegate import ImageDelegate
 from UI.Component.LabelImage import LabelImage
 from Logic.utils.Pathdb import get_resource_path
 from Logic.Common.MainApplication import MainApplication
@@ -94,7 +94,7 @@ class ApplicationWindow(QMainWindow):
 
         self.segmentButton = QPushButton("Segment")
         self.segmentButton.setStyleSheet("background-color:white")
-        self.segmentButton.clicked.connect( self.__mainApplication.extremSegmentation)
+        self.segmentButton.clicked.connect(self.__mainApplication.extremSegmentation)
         vLayout.addWidget(self.segmentButton)
 
         self.refinementButton = QPushButton("Refinement")
@@ -134,24 +134,16 @@ class ApplicationWindow(QMainWindow):
 
     @Slot()
     def on_save(self):
-        pass
-        # f = QFileDialog.getSaveFileName()
-        # print('Saving')
-        # if f is not None and f != "":
-        #     f = f[0]
-        #     self.graph_maker.save_image(f)
-        #     self.graph_maker.save_image(f)
-        # else:
-        #     pass
+        self.__mainApplication.saveMask(self)
 
     # @Slot()
     # def on_segment(self):
     #
     #
     #     pass
-        # self.graph_maker.extreme_segmentation()
-        # self.seedLabel.setPixmap(QPixmap.fromImage(
-        #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.extreme_segmentation))))
+    # self.graph_maker.extreme_segmentation()
+    # self.seedLabel.setPixmap(QPixmap.fromImage(
+    #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.extreme_segmentation))))
 
     # @Slot()
     # def on_clean(self):
@@ -162,9 +154,9 @@ class ApplicationWindow(QMainWindow):
     # @Slot()
     # def on_refinement(self):
     #     pass
-        # self.graph_maker.refined_seg()
-        # self.seedLabel.setPixmap(QPixmap.fromImage(
-        #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.refined_seg))))
+    # self.graph_maker.refined_seg()
+    # self.seedLabel.setPixmap(QPixmap.fromImage(
+    #     self.get_qimage(self.graph_maker.get_image_with_overlay(self.graph_maker.refined_seg))))
 
     def center(self):
         qr = self.frameGeometry()

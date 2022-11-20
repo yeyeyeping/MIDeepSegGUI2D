@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QFileDialog, QStyleFactory
-
+from PySide6.QtWidgets import QFileDialog
 from Model.GlobalViewModel import GlobalViewModel
 
 
@@ -16,10 +15,10 @@ class ImageDelegate:
         fdiag.setStyleSheet("")
         return f[0]
 
-    def saveSeg(self, filename):
-        '''
-        TODO：
-        实现导出分割结果
-        '''
-
-        pass
+    def selectSavePath(self, win):
+        f = QFileDialog.getSaveFileName(win,
+                                        "Save File",
+                                        self.gvm.lastOpenDir,
+                                        self.gvm.supportType
+                                        )
+        return f[0]

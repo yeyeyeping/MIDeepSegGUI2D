@@ -3,6 +3,7 @@ import numpy as np
 from PySide6.QtGui import QImage, QPainter, QPen, Qt, QPixmap
 from PySide6.QtCore import QObject, QPoint
 from PySide6.QtCore import Slot, Signal
+from PySide6.QtWidgets import QMessageBox
 
 from Logic.utils.utils import QImageToCvMat
 from Model.Scribble import SCRIBBLE_TYPE
@@ -32,7 +33,7 @@ class ImageLabelModel(QObject):
     # 扩展后转化成和图片尺寸一样的编码图
     __initial_extreme_seed: np.ndarray
     __contours: tuple
-    iniSegProb:np.ndarray
+    iniSegProb: np.ndarray
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -41,6 +42,7 @@ class ImageLabelModel(QObject):
         self.__extrem_pos = []
         self.__contours = ()
         self.__initialseg_end = False
+
     def imgShape(self):
         return (self.__imgH, self.__imgW)
 
@@ -159,8 +161,10 @@ class ImageLabelModel(QObject):
         self.__contours = ()
         self.__extrem_pos.clear()
         self.resetImage.emit(self.rawImage)
+
     def stage1End(self):
         return self.__initialseg_end
+
     def showContours(self, contours) -> tuple:
         self.__contours = contours
         img = QImageToCvMat(self.rawImage)
@@ -168,6 +172,18 @@ class ImageLabelModel(QObject):
             img, self.__contours, -1, (0, 255, 0), 2)
         q_img = QImage(img.data, img.shape[1], img.shape[0], img.shape[1] * 4, QImage.Format_RGB32)
         self.resetImage.emit(q_img)
+
+    def saveMask(self, filepath):
+        if not self.__initialseg_end or len(self.__contours) == 0:
+            QMessageBox.warning(None, "warn",
+                                "segmentation result not found.")
+
+            return
+        img = QImageToCvMat(self.rawImage)
+        img = cv2.drawContours(
+            img, self.__contours, -1, (0, 255, 0), 2)
+        q_img = QImage(img.data, img.shape[1], img.shape[0], img.shape[1] * 4, QImage.Format_RGB32)
+        q_img.save(filepath)
 
     def mapToRelative(self, x, y):
         '''

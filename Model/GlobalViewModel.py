@@ -1,9 +1,7 @@
-from typing import Optional
 import os
 from PySide6.QtCore import QObject
 from PySide6.QtGui import QImageReader
 
-from Logic.utils.Pathdb import get_resource_path
 from Model.ImageLabelModel import ImageLabelModel
 
 

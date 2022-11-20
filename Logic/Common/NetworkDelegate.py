@@ -1,9 +1,5 @@
-import os
-
-import numpy
 import numpy as np
 import torch.cuda
-from PySide6.QtCore import QObject
 
 from Logic.Common.network import UNet
 from Logic.utils.Pathdb import get_resource_path

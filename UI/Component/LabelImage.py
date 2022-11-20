@@ -1,9 +1,8 @@
 import PySide6.QtGui, os
-# from PIL import Image
-import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QImage, QPixmap
 from PySide6.QtWidgets import *
+
 from Model.GlobalViewModel import GlobalViewModel
 from Model.ImageLabelModel import ImageLabelModel
 

@@ -1,11 +1,11 @@
 import cv2
-import numpy as np
 import torch.cuda
 from PySide6.QtCore import Slot, QObject
 from PySide6.QtWidgets import QMessageBox
 from skimage import measure
 import maxflow
 
+from Common.ImageDelegate import ImageDelegate
 from Logic.Common.BboxCropper import BboxCropper
 from Logic.Common.NetworkDelegate import NetworkDelegate
 from Logic.Common.network import UNet
@@ -13,7 +13,6 @@ from Logic.utils.Pathdb import get_resource_path
 from Logic.utils.utils import *
 from Model.GlobalViewModel import GlobalViewModel
 import Model
-from Scribble import ScribeFactory, SCRIBBLE_TYPE
 
 
 class MainApplication(QObject):
@@ -193,3 +192,10 @@ class MainApplication(QObject):
 
         contours = self.findContours(pred)
         self.__globalvm.imgModel.showContours(contours)
+
+    def saveMask(self, win):
+        delegate = ImageDelegate(self.__globalvm)
+        f = delegate.selectSavePath(win)
+        if f == "":
+            return
+        self.__globalvm.imgModel.saveMask(f)
