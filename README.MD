@@ -16,7 +16,7 @@ This repository proivdes a 2D medical image interactive segmentation method for 
 A visualization comparison of different distance transform methods, following [GeodisTK](https://github.com/taigw/GeodisTK).
 ## Requirements
 Before you can use this package for image segmentation. You should:
-* Python 3.8 in Linux, Python 3.75 in Windows. 
+* Python 3.8 on Linux, Python 3.75 on Windows. 
 * PyTorch version >=1.0.1
 * Pyside6
 *  Numpy, scikit-image,scipy, SimpleITK,OpenCV, pyqt5, scipy......
