@@ -57,7 +57,7 @@ class ApplicationWindow(QMainWindow):
         self.img = LabelImage(self)
         self.img.initialize(self.globalModel)
         self.img.setStyleSheet("border:3px solid #242424;")
-        self.img.setPixmap(get_resource_path("Res/Image/3.png"))
+        self.img.setPixmap(get_resource_path("Res/Image/logo.png"))
         hLayout.addWidget(self.img)
 
         # 右边的标签和按钮，放在一个QWidget里面

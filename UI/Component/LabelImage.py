@@ -37,7 +37,6 @@ class LabelImage(QLabel):
     def initialize(self, gloablvm: GlobalViewModel):
         self.__global_vm = gloablvm
         self.__labelimg_vm = gloablvm.imgModel
-        print(self.__labelimg_vm)
         self.__labelimg_vm.resetImage.connect(self.reset)
 
     def reset(self, img):

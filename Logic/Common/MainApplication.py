@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QMessageBox
 from skimage import measure
 import maxflow
 
-from Common.ImageDelegate import ImageDelegate
+from Logic.Common.ImageDelegate import ImageDelegate
 from Logic.Common.BboxCropper import BboxCropper
 from Logic.Common.NetworkDelegate import NetworkDelegate
 from Logic.Common.network import UNet
