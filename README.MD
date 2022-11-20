@@ -16,13 +16,14 @@ This repository proivdes a 2D medical image interactive segmentation method for 
 A visualization comparison of different distance transform methods, following [GeodisTK](https://github.com/taigw/GeodisTK).
 ## Requirements
 Before you can use this package for image segmentation. You should:
+* Python 3.8 in Linux, Python 3.75 in Windows. 
 * PyTorch version >=1.0.1
-* Some common python packages such as Numpy, Pandas, SimpleITK,OpenCV, pyqt5, scipy......
+* Pyside6
+*  Numpy, scikit-image,scipy, SimpleITK,OpenCV, pyqt5, scipy......
 * Install the [GeodisTK][geos_dis_link] for geodesic distance transformation.
 * Install the [SimpleCRF][simplecrf_link] for interactive refinement.
 ## How to use
 1, compile the requirement library:
-
 ```bash
 pip install -r requirements.txt
 ```
