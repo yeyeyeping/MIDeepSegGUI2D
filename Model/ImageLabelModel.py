@@ -38,7 +38,7 @@ class ImageLabelModel(QObject):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.scribbles = []
-        self.cur_scribble_type = SCRIBBLE_TYPE.SEED
+        self.cur_scribble_type = SCRIBBLE_TYPE.RECT
         self.__extrem_pos = []
         self.__contours = ()
         self.__initialseg_end = False

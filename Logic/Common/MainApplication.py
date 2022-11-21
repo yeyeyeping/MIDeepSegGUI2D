@@ -24,7 +24,7 @@ class MainApplication(QObject):
     def __init__(self, globavm: GlobalViewModel):
         super(MainApplication, self).__init__()
         self.__globalvm = globavm
-        pth = get_resource_path("Res/iter_15000.pth")
+        pth = get_resource_path("Res/weight/iter_15000.pth")
         self.cuda = torch.cuda.is_available()
         self.crf_param = (5.0, 0.1)
         self.__network_delegate = NetworkDelegate(self.cuda, UNet(2, 2, 16))
@@ -72,9 +72,6 @@ class MainApplication(QObject):
 
         # 保存副本，用于后续refine
         self.__globalvm.imgModel.iniSegProb = np.array(pred)
-
-        pred[pred >= 0.5] = 1
-        pred[pred < 0.5] = 0
 
         contours = self.findContours(pred)
         self.__globalvm.imgModel.showContours(contours)

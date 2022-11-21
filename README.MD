@@ -36,6 +36,17 @@ python main.py
 
 4. Note that, the pretrained model is only trained with placenta MR-T2 data. 
 
+By the way, you can also use `PyInstaller` to bundle a Python application,run:
+```bash
+pip install pyinstaller 
+pyinstaller mideepseg.spec
+```
+or
+```bash
+ pyinstaller  -F -w main.py -n mideepseg  --add-data "Res/:Res/"  --noupx
+```
+If you are more glad to the directory version(start quickly), just replace `-F` with `-D`.
+  
 ## Acknowledgment and Statement
 * We thank the authors of [Deep_Extreme_Cut][dextr_link], [DeepIGeoS][deepigeos_link] and [BIFSeg][bifseg_link] for their elegant and efficient code base !
 

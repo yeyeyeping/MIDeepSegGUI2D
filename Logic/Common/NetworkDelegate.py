@@ -35,7 +35,7 @@ class NetworkDelegate:
 
 if __name__ == '__main__':
     delete = NetworkDelegate(False, UNet(2, 2, 16))
-    delete.loadModel(get_resource_path("Res/iter_15000.pth"))
+    delete.loadModel(get_resource_path("Res/weight/iter_15000.pth"))
     fg, bk = delete.inference(delete.device_wrapper(torch.randn((1, 2, 96, 96))))
     print(fg.shape)
     print(bk.shape)

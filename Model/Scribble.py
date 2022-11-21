@@ -202,4 +202,5 @@ class ScribeFactory:
 
 
 if __name__ == '__main__':
+
     print(QPainter().device())
