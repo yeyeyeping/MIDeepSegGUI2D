@@ -1,3 +1,5 @@
+import os
+
 from PySide6.QtWidgets import QFileDialog
 from Model.GlobalViewModel import GlobalViewModel
 
@@ -15,10 +17,11 @@ class ImageDelegate:
         fdiag.setStyleSheet("")
         return f[0]
 
-    def selectSavePath(self, win):
+    def selectSavePath(self, win, filename):
+        name, exet = filename.split(".")[0], filename.split(".")[1],
         f = QFileDialog.getSaveFileName(win,
                                         "Save File",
-                                        self.gvm.lastOpenDir,
+                                        os.path.join(self.gvm.lastOpenDir, f"{name}_mask.{exet}"),
                                         self.gvm.supportType
                                         )
         return f[0]

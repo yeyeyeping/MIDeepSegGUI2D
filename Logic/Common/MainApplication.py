@@ -1,3 +1,5 @@
+import os.path
+
 import cv2
 import torch.cuda
 from PySide6.QtCore import Slot, QObject
@@ -73,6 +75,8 @@ class MainApplication(QObject):
         # 保存副本，用于后续refine
         self.__globalvm.imgModel.iniSegProb = np.array(pred)
 
+        self.__globalvm.imgModel.setSegmentationResult(pred)
+
         contours = self.findContours(pred)
         self.__globalvm.imgModel.showContours(contours)
         # 第一阶段已经结束设置为false
@@ -129,18 +133,21 @@ class MainApplication(QObject):
     @Slot()
     def refine(self):
         if not self.__globalvm.imgModel.stage1End():
-            return
+            if not hasattr(self, "img_name"):
+                QMessageBox.warning(self, "warn",
+                                    "please give a initial segmenation first")
+                return
         grayImage = self.__globalvm.imgModel.grayImage
         # 获取点击的前景点和背景点，编码成图
         label_image_view = self.__globalvm.imgModel
         fg_pos, bg_pos = Model.Scribble.ScribeFactory.getScribbleByEnum(Model.Scribble.SCRIBBLE_TYPE.SEED,
                                                                         label_image_view).positive, \
-                         Model.Scribble.ScribeFactory.getScribbleByEnum(Model.Scribble.SCRIBBLE_TYPE.SEED,
-                                                                        label_image_view).negative
+            Model.Scribble.ScribeFactory.getScribbleByEnum(Model.Scribble.SCRIBBLE_TYPE.SEED,
+                                                           label_image_view).negative
         fg_seeds, bg_seeds = self.pos2seed(fg_pos, grayImage.shape), \
-                             self.pos2seed(bg_pos, grayImage.shape),
+            self.pos2seed(bg_pos, grayImage.shape),
         fg_seeds, bg_seeds = extends_points(fg_seeds), \
-                             extends_points(bg_seeds)
+            extends_points(bg_seeds)
 
         # 把前、背景点击图、首次分割使用的extreme seeds求并集，依据这个并集生成裁剪器
         union_seeds = np.maximum(fg_seeds, bg_seeds)
@@ -182,17 +189,18 @@ class MainApplication(QObject):
 
         # 执行maxflow优化
         refined_pred = maxflow.interactive_maxflow2d(cropped_img, prob, crf_seed, self.crf_param)
-
         # 预测结果还原成gray尺寸一样
         pred = np.zeros_like(grayImage, dtype=np.float)
         pred[cropper.bbox[0]:cropper.bbox[2], cropper.bbox[1]:cropper.bbox[3]] = refined_pred
 
+        self.__globalvm.imgModel.setSegmentationResult(pred)
+
         contours = self.findContours(pred)
         self.__globalvm.imgModel.showContours(contours)
 
-    def saveMask(self, win):
+    def saveMask(self, win, name):
         delegate = ImageDelegate(self.__globalvm)
-        f = delegate.selectSavePath(win)
+        f = delegate.selectSavePath(win, name)
         if f == "":
             return
         self.__globalvm.imgModel.saveMask(f)

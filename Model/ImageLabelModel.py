@@ -34,11 +34,12 @@ class ImageLabelModel(QObject):
     __initial_extreme_seed: np.ndarray
     __contours: tuple
     iniSegProb: np.ndarray
+    __segmentResult: np.ndarray
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.scribbles = []
-        self.cur_scribble_type = SCRIBBLE_TYPE.RECT
+        self.cur_scribble_type = SCRIBBLE_TYPE.SEED
         self.__extrem_pos = []
         self.__contours = ()
         self.__initialseg_end = False
@@ -160,6 +161,7 @@ class ImageLabelModel(QObject):
         self.__initialseg_end = False
         self.__contours = ()
         self.__extrem_pos.clear()
+        self.segmentResult = None
         self.resetImage.emit(self.rawImage)
 
     def stage1End(self):
@@ -174,16 +176,25 @@ class ImageLabelModel(QObject):
         self.resetImage.emit(q_img)
 
     def saveMask(self, filepath):
-        if not self.__initialseg_end or len(self.__contours) == 0:
+        if self.__segmentResult is None:
             QMessageBox.warning(None, "warn",
                                 "segmentation result not found.")
-
             return
-        img = QImageToCvMat(self.rawImage)
-        img = cv2.drawContours(
-            img, self.__contours, -1, (0, 255, 0), 2)
-        q_img = QImage(img.data, img.shape[1], img.shape[0], img.shape[1] * 4, QImage.Format_RGB32)
-        q_img.save(filepath)
+
+        cv2.imsave(filepath, self.__segmentResult)
+
+        # if not self.__initialseg_end or len(self.__contours) == 0:
+        #     QMessageBox.warning(None, "warn",
+        #                         "segmentation result not found.")
+        #
+        #     return
+
+        # img = QImageToCvMat(self.__segmentResult)
+        # # img = QImageToCvMat(self.rawImage)
+        # # img = cv2.drawContours(
+        # #     img, self.__contours, -1, (0, 255, 0), 2)
+        # q_img = QImage(img.data, img.shape[1], img.shape[0], img.shape[1] * 4, QImage.Format_RGB32)
+        # q_img.save(filepath)
 
     def mapToRelative(self, x, y):
         '''
@@ -202,3 +213,6 @@ class ImageLabelModel(QObject):
         :return:
         '''
         return x + self.__originX, y + self.__originY
+
+    def setSegmentationResult(self, result: np.ndarray):
+        self.__segmentResult = result

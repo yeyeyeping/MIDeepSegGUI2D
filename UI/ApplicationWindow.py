@@ -1,3 +1,5 @@
+import os
+
 from PySide6 import QtGui
 from PySide6.QtGui import QAction, QIcon, QPalette
 from PySide6.QtWidgets import *
@@ -12,6 +14,7 @@ from Logic.Common.MainApplication import MainApplication
 
 class ApplicationWindow(QMainWindow):
     __mainApplication: MainApplication
+    img_name: str
 
     def __init__(self):
         super().__init__()
@@ -128,13 +131,18 @@ class ApplicationWindow(QMainWindow):
     def on_open(self):
         delegate = ImageDelegate(self.globalModel)
         fpath = delegate.selectFile(win=self.parent())
+        self.img_name = os.path.basename(fpath)
         if fpath == "":
             return
         self.img.setPixmap(fpath)
 
     @Slot()
     def on_save(self):
-        self.__mainApplication.saveMask(self)
+        if not hasattr(self, "img_name"):
+            QMessageBox.warning(self, "warn",
+                                "please select a new file first")
+            return
+        self.__mainApplication.saveMask(self, self.img_name)
 
     # @Slot()
     # def on_segment(self):
