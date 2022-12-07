@@ -134,7 +134,7 @@ class MainApplication(QObject):
     def refine(self):
         if not self.__globalvm.imgModel.stage1End():
             if not hasattr(self, "img_name"):
-                QMessageBox.warning(self, "warn",
+                QMessageBox.warning(None, "warn",
                                     "please give a initial segmenation first")
                 return
         grayImage = self.__globalvm.imgModel.grayImage

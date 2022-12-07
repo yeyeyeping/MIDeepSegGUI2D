@@ -181,7 +181,7 @@ class ImageLabelModel(QObject):
                                 "segmentation result not found.")
             return
 
-        cv2.imsave(filepath, self.__segmentResult)
+        cv2.imwrite(filepath, self.__segmentResult)
 
         # if not self.__initialseg_end or len(self.__contours) == 0:
         #     QMessageBox.warning(None, "warn",
@@ -215,4 +215,4 @@ class ImageLabelModel(QObject):
         return x + self.__originX, y + self.__originY
 
     def setSegmentationResult(self, result: np.ndarray):
-        self.__segmentResult = result
+        self.__segmentResult = result * 255
