@@ -2,7 +2,7 @@ import os
 import PySide6
 from PySide6.QtCore import QDir
 from PySide6 import QtGui
-from PySide6.QtGui import QAction, QIcon, QPalette, QFont
+from PySide6.QtGui import QAction, QIcon, QPalette
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import QImageReader
@@ -11,7 +11,7 @@ from Logic.Common.ImageDelegate import ImageDelegate
 from UI.Component.LabelImage import LabelImage
 from Logic.utils.Pathdb import get_resource_path
 from Logic.Common.MainApplication import MainApplication
-from UI.MaskSaveWidget import MaskSaveWidget
+from UI.Component.MaskSaveWidget import MaskSaveWidget
 
 
 class ApplicationWindow(QMainWindow):
@@ -223,6 +223,7 @@ class ApplicationWindow(QMainWindow):
                                     "标注完成")
                 return
             selectmodel = self.fileListView.selectionModel()
+            selectmodel.clear()
             selectmodel.setCurrentIndex(newidx, QItemSelectionModel.SelectionFlag.ToggleCurrent)
             self.auxWidget.close()
         else:

@@ -17,15 +17,17 @@ class MaskSaveWidget(QWidget):
 
         hbox = QHBoxLayout()
         self.imgRawImage = QLabel()
-        self.imgRawImage.setMaximumWidth(300)
-        self.imgRawImage.setMaximumHeight(300)
+        self.imgRawImage.setFixedWidth(300)
+        self.imgRawImage.setFixedHeight(300)
 
-        hbox.addStretch(20)
+        hbox.addStretch(5)
         self.imgMask = QLabel()
-        self.imgMask.setMaximumWidth(300)
-        self.imgMask.setMaximumHeight(300)
+        self.imgMask.setFixedWidth(300)
+        self.imgMask.setFixedHeight(300)
         hbox.addWidget(self.imgRawImage)
+        hbox.addStretch(5)
         hbox.addWidget(self.imgMask)
+        hbox.addStretch(5)
         vbox.addLayout(hbox)
 
         hPathLayout = QHBoxLayout()
@@ -48,8 +50,10 @@ class MaskSaveWidget(QWidget):
         buttonLayout.addStretch(50)
 
     def updateCom(self, raw, mask, savepath):
-        self.imgRawImage.setPixmap(raw)
-        self.imgMask.setPixmap(mask)
+        w, h = self.imgRawImage.width(), self.imgRawImage.height()
+        self.imgRawImage.setPixmap(raw.scaled(w, h, aspectMode=Qt.KeepAspectRatio)
+                                   )
+        self.imgMask.setPixmap(mask.scaled(w, h, aspectMode=Qt.KeepAspectRatio))
         self.path.setText(savepath)
 
     @Slot()
