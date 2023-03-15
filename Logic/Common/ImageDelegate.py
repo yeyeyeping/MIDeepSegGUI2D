@@ -7,10 +7,14 @@ from Model.GlobalViewModel import GlobalViewModel
 class ImageDelegate:
     def __init__(self, gvm: GlobalViewModel):
         self.gvm = gvm
-
+    def selectDir(self,win):
+        fdiag = QFileDialog(win)
+        fdiag.setStyleSheet("")
+        f = fdiag.getExistingDirectory(win,"选择目录", self.gvm.lastOpenDir)
+        return f
     def selectFile(self, win):
         fdiag = QFileDialog()
-        f = fdiag.getOpenFileName(win, "Open File",
+        f = fdiag.getOpenFileName(win, "打开文件",
                                   self.gvm.lastOpenDir,
                                   self.gvm.supportType
                                   )

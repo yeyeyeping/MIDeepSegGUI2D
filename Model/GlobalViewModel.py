@@ -15,9 +15,10 @@ class GlobalViewModel(QObject):
         super().__init__(parent)
         self.__img_vm = ImageLabelModel(self)
         # 上一次记录上一次打开时的文件夹路径
-        self.lastOpenDir = os.path.abspath(".")
+        self.lastOpenDir = os.path.abspath("Res/test")
         # 获取QImage所能够读取和处理的文件扩展名，作为文件选择窗口的过滤器
         # 当前值为:Image Files(*.bmp *.cur *.gif *.icns *.ico *.jpeg *.jpg *.pbm *.pgm *.png *.ppm *.svg *.svgz *.tga *.tif *.tiff *.wbmp *.webp *.xbm *.xpm)
+
         self.supportType = "Image Files(" + \
                            " ".join([f"*.{(bytes.decode(bytes(i)))}"
                                      for i in QImageReader.supportedImageFormats()]) + ")"

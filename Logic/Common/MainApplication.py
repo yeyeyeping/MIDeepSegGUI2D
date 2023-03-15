@@ -37,7 +37,7 @@ class MainApplication(QObject):
         extreme_pos = self.__globalvm.imgModel.extremPos
         if len(extreme_pos) == 0:
             QMessageBox.warning(None, "warn",
-                                "Please provide initial seeds for segmentation.")
+                                "请先获得一个初始的分割结果.")
             return
         # 将记录鼠标的点击点的位置信息转换到和图片大小一样的单通道矩阵上
         grayImage = self.__globalvm.imgModel.grayImage
@@ -55,7 +55,7 @@ class MainApplication(QObject):
         cropped_geos = interaction_geodesic_distance(
             normal_img, cropped_seed)
 
-        # 将剪裁后的图片放大到固定的尺寸(96,96)，堆叠测地线图、原图获得输出
+        # 将剪裁后的图片放大到固定的尺寸(96,96)，堆叠测地线图、原图获得输入
         zoomed_img, zoomed_geos = zoom_image(normal_img, (96, 96)), zoom_image(cropped_geos, (96, 96))
         input = np.asarray([[zoomed_img, zoomed_geos]])
 
@@ -135,7 +135,7 @@ class MainApplication(QObject):
         if not self.__globalvm.imgModel.stage1End():
             if not hasattr(self, "img_name"):
                 QMessageBox.warning(None, "warn",
-                                    "please give a initial segmenation first")
+                                    "请先获得一个初始分割结果")
                 return
         grayImage = self.__globalvm.imgModel.grayImage
         # 获取点击的前景点和背景点，编码成图
@@ -198,9 +198,5 @@ class MainApplication(QObject):
         contours = self.findContours(pred)
         self.__globalvm.imgModel.showContours(contours)
 
-    def saveMask(self, win, name):
-        delegate = ImageDelegate(self.__globalvm)
-        f = delegate.selectSavePath(win, name)
-        if f == "":
-            return
-        self.__globalvm.imgModel.saveMask(f)
+    def saveMask(self, f):
+        return self.__globalvm.imgModel.saveMask(f)

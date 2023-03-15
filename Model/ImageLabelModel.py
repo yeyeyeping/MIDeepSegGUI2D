@@ -176,13 +176,13 @@ class ImageLabelModel(QObject):
         self.resetImage.emit(q_img)
 
     def saveMask(self, filepath):
-        if self.__segmentResult is None:
+        if not hasattr(self, "_ImageLabelModel__segmentResult") or self.__segmentResult is None:
             QMessageBox.warning(None, "warn",
                                 "segmentation result not found.")
-            return
+            return False
 
         cv2.imwrite(filepath, self.__segmentResult)
-
+        return True
         # if not self.__initialseg_end or len(self.__contours) == 0:
         #     QMessageBox.warning(None, "warn",
         #                         "segmentation result not found.")
@@ -195,6 +195,23 @@ class ImageLabelModel(QObject):
         # #     img, self.__contours, -1, (0, 255, 0), 2)
         # q_img = QImage(img.data, img.shape[1], img.shape[0], img.shape[1] * 4, QImage.Format_RGB32)
         # q_img.save(filepath)
+    def getRawImage(self):
+        img = QImageToCvMat(self.rawImage)
+        img = cv2.drawContours(
+            img, self.__contours, -1, (0, 255, 0), 2)
+        q_img = QImage(img.data, img.shape[1], img.shape[0], img.shape[1] * 4, QImage.Format_RGB32)
+        return QPixmap.fromImage(q_img)
+
+    def getMask(self):
+        if not hasattr(self, "_ImageLabelModel__segmentResult") or self.__segmentResult is None:
+            QMessageBox.warning(None, "warn",
+                                "segmentation result not found.")
+            return None
+        data = self.__segmentResult.astype(np.uint8)
+        qimage = QImage(data.data, data.shape[1],data.shape[1], QImage.Format_Grayscale8)
+        # 将 QImage 对象转换为 QPixmap 对象
+        qpixmap = QPixmap.fromImage(qimage)
+        return qpixmap
 
     def mapToRelative(self, x, y):
         '''

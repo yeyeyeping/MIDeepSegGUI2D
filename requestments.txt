@@ -14,6 +14,6 @@ scipy==1.9.3
 shiboken6==6.4.0.1
 SimpleCRF==0.2.1.1
 tifffile==2022.10.10
-torch==1.13.0+cpu
+torch
 typing_extensions==4.4.0
 GeodisTK==0.1.7

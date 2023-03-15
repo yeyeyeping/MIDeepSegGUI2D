@@ -1,5 +1,5 @@
 import PySide6.QtGui, os
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QImage, QPixmap
 from PySide6.QtWidgets import *
 
@@ -48,8 +48,11 @@ class LabelImage(QLabel):
             return
         self.__labelimg_vm.computeOrigin(self.width(), self.height())
 
+
     def mousePressEvent(self, ev: PySide6.QtGui.QMouseEvent) -> None:
         super().mousePressEvent(ev)
+        if not hasattr(self.__labelimg_vm, "_ImageLabelModel__originX"):
+            return
         color: int = Qt.red
         if ev.button() is Qt.MouseButton.RightButton:
             color = Qt.blue
@@ -66,11 +69,15 @@ class LabelImage(QLabel):
 
     def mouseMoveEvent(self, ev: PySide6.QtGui.QMouseEvent) -> None:
         super().mouseMoveEvent(ev)
+        if not hasattr(self.__labelimg_vm, "_ImageLabelModel__originX"):
+            return
         self.__labelimg_vm.update(ev.pos().x(), ev.pos().y())
         self.update()
 
     def mouseReleaseEvent(self, ev: PySide6.QtGui.QMouseEvent) -> None:
         super().mouseReleaseEvent(ev)
+        if not hasattr(self.__labelimg_vm, "_ImageLabelModel__originX"):
+            return
         self.__labelimg_vm.end(ev.pos().x(), ev.pos().y())
         self.update()
 
