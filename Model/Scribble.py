@@ -11,8 +11,8 @@ class SCRIBBLE_TYPE(enum.Flag):
 
 
 class Point:
-    x: int
-    y: int
+    # x: int
+    # y: int
 
     def __init__(self, x, y):
         self.x = x

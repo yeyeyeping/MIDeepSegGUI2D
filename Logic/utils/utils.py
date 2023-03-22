@@ -59,7 +59,7 @@ def QImageToGrayCvMat(incomingImage):
     height = incomingImage.height()
 
     ptr = incomingImage.constBits()
-    arr = np.array(ptr).reshape(height, width)  # Copies the data
+    arr = np.array(ptr).reshape(height, incomingImage.bytesPerLine())  # Copies the data
     return arr
 
 

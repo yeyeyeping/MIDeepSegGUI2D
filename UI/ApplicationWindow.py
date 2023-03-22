@@ -35,7 +35,7 @@ class ApplicationWindow(QMainWindow):
         '''设置菜单栏'''
 
         mainMenu = self.menuBar()
-        fileMenu = mainMenu.addMenu('&File')
+        fileMenu = mainMenu.addMenu('&文件')
         # 文件菜单
         self.openAction = QAction(QIcon(get_resource_path("Res/Image/open.bmp")), '打开图片', self)
         self.openAction.setShortcut('Ctrl+O')
@@ -93,6 +93,7 @@ class ApplicationWindow(QMainWindow):
         self.editFileList2.setFixedHeight(30)
         self.editFileList2.setMinimumWidth(600)
         self.editFileList2.setFocusPolicy(Qt.NoFocus)
+
         hlbox2.addWidget(self.editFileList2)
         hlbox2.addStretch(10)
         self.annotationButton2 = QPushButton("加载输出路径")
@@ -101,8 +102,8 @@ class ApplicationWindow(QMainWindow):
         hlbox2.addWidget(self.annotationButton2)
         mainvlayout.addLayout(hlbox2)
 
-        self.fileListView = QListView(self)
-        self.fileListView.setMinimumWidth(100)
+        self.fileListView = QTableView(self)
+        self.fileListView.setMinimumWidth(450)
         self.fileListView.setMinimumHeight(200)
         self.fileModel = QFileSystemModel(self)
         # self.fileListView.selectionChanged
@@ -202,6 +203,7 @@ class ApplicationWindow(QMainWindow):
         self.auxWidget = MaskSaveWidget()
         self.auxWidget.resultSignal.connect(self.handle_save)
         self.auxWidget.setWindowModality(Qt.WindowModality.ApplicationModal)
+        # self.auxWidget.setParent(self)
         ApplicationWindow.center(self.auxWidget)
         vLayout.addStretch(1)
         self.setCentralWidget(self.centerWidget)
